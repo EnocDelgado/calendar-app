@@ -1,5 +1,3 @@
 # CalendarAPP
 
-This projct is based on Fernado Herrera React's course created with MERN stcak.
-
-
+This project is based on Fernando Herrera React's course created with MERN stack.
