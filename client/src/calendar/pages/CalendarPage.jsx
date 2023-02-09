@@ -1,28 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { addHours } from 'date-fns';
 import { CalendarBox, CalendarModal, FabAddNew, Navbar, FabDelete } from "../";
 
 import { getMessages, localizer } from '../../helpers';
 import { useUiStore } from '../../hooks/useUiStore';
-import { useCalendarStore } from '../../hooks';
+import { useAuthStore, useCalendarStore } from '../../hooks';
 
 
 
 export const CalendarPage = () => {
 
+  const { user } = useAuthStore();
   const { openDateModal } = useUiStore();
-  const { events, setActiveEvent } = useCalendarStore();
+  const { events, setActiveEvent, startLoadingEvent } = useCalendarStore();
 
-  const [lastView, setLastView] = useState( localStorage.getItem( 'lastView' || 'week' ));
+  const [lastView, setLastView] = useState( localStorage.getItem( 'lastView' ) || 'week' );
 
   // This function allows us to change the style of the entry.
   const eventStyleGetter = ( event, start, end, isSelected ) => {
 
+    // validate user to update events
+    const isMyEvent = ( user.uid === event.user._id ) || ( user.uid === event.user.uid );
+
     const style = {
-      backgroundColor: '#347CF7',
+      backgroundColor: isMyEvent ? '#347CF7' : '#808080',
       borderRadius: '0px',
       opacity: 0.8,
       color: 'white'
@@ -48,6 +51,10 @@ export const CalendarPage = () => {
     localStorage.setItem( 'lastView', event );
     setLastView( event )
   }
+
+  useEffect( () => {
+    startLoadingEvent()
+  }, [])
 
   return (
     <>
